@@ -1,16 +1,18 @@
 import React from "react"
 import ClaudeRecipe from './ClaudeRecipe'
 import IngredientsList from './IngredientsList'
+import { getRecipeFromMistral } from '../ai.js'
+import Markdown from 'react-markdown'
 
 export default function Main() {
   const [ingredients, setIngredients] = React.useState([])
-  const [recipeShown, setRecipeShown] = React.useState(false)
+  const [recipe, setRecipe] = React.useState('')
 
-  function toggleRecipeShown() {
-    setRecipeShown(prevShown => !prevShown)
+  async function getRecipe() {
+    const recipeMarkdown = await getRecipeFromMistral(ingredients)
+    setRecipe(recipeMarkdown)
+    console.log(recipeMarkdown)
   }
-
-
 
   function addIngredient(e) {
     e.preventDefault()
@@ -35,11 +37,11 @@ export default function Main() {
       {ingredients.length > 0 &&
         <IngredientsList
           ingredients={ingredients}
-          toggleRecipeShown={toggleRecipeShown}
+          getRecipe={getRecipe}
         />
       }
 
-      {recipeShown && <ClaudeRecipe />}
+      {recipe && <ClaudeRecipe recipe={recipe} />}
 
     </main>
   )
